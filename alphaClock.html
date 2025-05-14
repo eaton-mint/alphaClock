@@ -74,8 +74,11 @@ function drawTime(ctx, radius){
     //console.log(hour);
 
     if(hourDiff>hourStep){
-      //console.log(hourDiff);
+      console.log(hourDiff);
       hourLastPos = hourLastPos + hourStep;
+      if(hourLastPos > 2*Math.PI){
+        hourLastPos = hourLastPos - 2*Math.PI;
+      }
       drawHand(ctx, hourLastPos, radius*0.5, radius*0.07);
       //setTimeout(5);
       //drawClock();
