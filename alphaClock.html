@@ -12,16 +12,29 @@ Sorry, your browser does not support canvas.
 <fieldset>
   <legend>Alpha Start</legend>
   <div>
-    <input type="radio" id="0_index" name="numberIndex" />
+    <input type="radio" id="0_index" name="numberIndexRadio" />
     <label for="0_index">0 Index</label>
-    <input type="radio" id="1_index" name="numberIndex" checked/>
+    <br>
+    <input type="radio" id="1_index" name="numberIndexRadio" checked/>
     <label for="0_index">1 Index</label>
+  </div>
+
+</fieldset>
+<fieldset>
+  <legend>Minute Hand</legend>
+  <div>
+    <input type="radio" id="minuteHandNormal" name="minuteHandRadio" checked/>
+    <label for="minuteHandNormal">Normal</label>
+    <br>
+    <input type="radio" id="minuteHandChaos" name="minuteHandRadio" />
+    <label for="minuteHandChaos">Awful</label>
   </div>
 
 </fieldset>
 
 <script>
 let hourLastPos = 0;
+let minuteLastPos = 0;
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
 let radius = canvas.height / 2;
@@ -80,13 +93,14 @@ function drawNumbers(ctx, radius) {
 }
 
 function drawTime(ctx, radius){
-    const hourStep = 0.125;
+    const handStep = 0.125;
     const now      = new Date();
     let hour       = now.getHours();
     let minute     = now.getMinutes();
     let second     = now.getSeconds();
     let hourShift  = [];
     let hourDiff   = 0;
+    let minuteDiff = 0;
 
     if(document.getElementById('0_index').checked == true){
         hourShift  = [10,5,11,9,3,2,7,6,0,4,8,1];
@@ -101,17 +115,16 @@ function drawTime(ctx, radius){
     hour     = hourShift[hour]
     hour     = (hour*Math.PI/6)+(minute*Math.PI/(6*60))+(second*Math.PI/(360*60));
     hourDiff = Math.abs(hour-hourLastPos)
-    //console.log(hour);
 
-    if(hourDiff>hourStep){
-      console.log(hourDiff);
-      hourLastPos = hourLastPos + hourStep;
+
+    if(hourDiff>handStep){
+
+      hourLastPos = hourLastPos + handStep;
       if(hourLastPos > 2*Math.PI){
         hourLastPos = hourLastPos - 2*Math.PI;
       }
       drawHand(ctx, hourLastPos, radius*0.5, radius*0.07);
-      //setTimeout(5);
-      //drawClock();
+
     }
     else {
       drawHand(ctx, hour, radius*0.5, radius*0.07);
@@ -120,8 +133,33 @@ function drawTime(ctx, radius){
 
 
     //minute
+    
+    if(document.getElementById('minuteHandChaos').checked == true){
+      minuteRemain = minute%5;
+      minute = Math.trunc(minute/5);
+      minute = hourShift[minute]*5+minuteRemain;
+    }
+    
     minute=(minute*Math.PI/30)+(second*Math.PI/(30*60));
-    drawHand(ctx, minute, radius*0.8, radius*0.07);
+
+    minuteDiff = Math.abs(minute-minuteLastPos)
+ 
+
+    if(minuteDiff>handStep){
+ 
+      minuteLastPos = minuteLastPos + handStep;
+      if(minuteLastPos > 2*Math.PI){
+        minuteLastPos = minuteLastPos - 2*Math.PI;
+      }
+      drawHand(ctx, minuteLastPos, radius*0.8, radius*0.07);
+
+    }
+    else {
+      drawHand(ctx, minute, radius*0.8, radius*0.07);
+      minuteLastPos = minute;
+    }
+    
+
     // second
     second=(second*Math.PI/30);
     drawHand(ctx, second, radius*0.9, radius*0.02);
